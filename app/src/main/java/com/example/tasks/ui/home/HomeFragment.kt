@@ -1,6 +1,7 @@
 package com.example.tasks.ui.home
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,14 +11,20 @@ import androidx.fragment.app.activityViewModels
 import com.example.task.AddTaskDialog
 import com.example.task.ItemAdapter
 import com.example.task.MainViewModel
+import com.example.tasks.MainActivity
 import com.example.tasks.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
-    private val viewModel: MainViewModel by activityViewModels()
+    private lateinit var viewModel: MainViewModel
 
     private val binding get() = _binding!!
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        viewModel = (context as MainActivity).viewModel
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,6 +47,8 @@ class HomeFragment : Fragment() {
             dialog.show(parentFragmentManager, "Add New Task")
             adapter.notifyDataSetChanged()
         }
+
+
 
     }
 
