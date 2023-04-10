@@ -7,12 +7,15 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import android.widget.RemoteViews
+import android.widget.Toast
 
 /**
  * Implementation of App Widget functionality.
  */
 class AppWidget : AppWidgetProvider() {
+
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager,
@@ -30,6 +33,19 @@ class AppWidget : AppWidgetProvider() {
 
     override fun onDisabled(context: Context) {
         // Enter relevant functionality for when the last widget is disabled
+    }
+
+    override fun onReceive(context: Context?, intent: Intent) {
+        if (ACTION_TOAST.equals(intent.action)){
+            val clickedPosition = intent.getIntExtra(EXTRA_ITEM_POSITION, 0)
+            Log.d("Shashwat", "Clicked Position: $clickedPosition")
+        }
+        super.onReceive(context, intent)
+    }
+
+    companion object {
+        const val ACTION_TOAST = "action"
+        const val EXTRA_ITEM_POSITION = "itemPosition"
     }
 }
 
@@ -50,7 +66,7 @@ internal fun updateAppWidget(
     serviceIntent.setData(Uri.parse(serviceIntent.toUri(Intent.URI_INTENT_SCHEME)))
 
     val clickIntent = Intent(context, AppWidget::class.java)
-    clickIntent.setAction("action")
+    clickIntent.setAction(AppWidget.ACTION_TOAST)
     val clickPendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         PendingIntent.getBroadcast(context, 0, clickIntent, PendingIntent.FLAG_MUTABLE)
     } else {

@@ -1,21 +1,15 @@
 package com.example.task
 
-import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.os.SystemClock
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.ToggleButton
-import androidx.core.content.ContextCompat.registerReceiver
 import androidx.recyclerview.widget.RecyclerView
 import com.example.tasks.R
-import com.example.tasks.TimerService
 import com.google.android.material.card.MaterialCardView
-import java.util.logging.Handler
 
 /**
  * Adapter for the [RecyclerView] in [MainActivity]. Displays [Affirmation] data object.
@@ -50,14 +44,26 @@ class ItemAdapter(
         holder.textView.text = item
         var isRunning = false
         var elapsedTime = 0L
-        var handler: Handler
-        holder.toggleButton.setOnCheckedChangeListener { compoundButton, isChecked ->
+        val handler: Handler = Handler()
+        holder.toggleButton.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                elapsedTime = if (isRunning) elapsedTime else 0L
+                val startTime = System.currentTimeMillis()
                 isRunning = true
-
+                handler.post(object : Runnable {
+                    override fun run() {
+                        val currentTime = System.currentTimeMillis()
+                        elapsedTime = currentTime - startTime
+                        holder.textView.text = formatTime(elapsedTime)
+                        if (isRunning) {
+                            handler.postDelayed(this, 10)
+                        }
+                    }
+                })
             } else {
                 isRunning = false
+                handler.removeCallbacksAndMessages(null)
+                elapsedTime = 0
+                holder.textView.text = item
             }
         }
     }

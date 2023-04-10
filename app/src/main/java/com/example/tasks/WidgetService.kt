@@ -45,6 +45,10 @@ class WidgetService: RemoteViewsService() {
         override fun getViewAt(index: Int): RemoteViews {
             val views = RemoteViews(context.packageName, R.layout.widget_item)
             views.setTextViewText(R.id.widget_item_text, viewModel.tasks.value!![index])
+
+            val fillIntent = Intent()
+            fillIntent.putExtra(AppWidget.EXTRA_ITEM_POSITION, index)
+            views.setOnClickFillInIntent(R.id.widget_item_text, fillIntent)
             return views
         }
 

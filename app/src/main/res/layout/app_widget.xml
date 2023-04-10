@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         
-        <StackView
+        <ListView
             android:id="@+id/widget_stack_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -32,6 +32,7 @@
             android:layout_height="match_parent"
             android:background="@android:color/darker_gray"
             android:text="Empty"
+            android:lineHeight="15dp"
             android:gravity="center"
             android:textColor="@android:color/white"
             android:textSize="20sp"

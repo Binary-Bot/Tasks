@@ -6,13 +6,15 @@ import androidx.lifecycle.ViewModel
 class MainViewModel: ViewModel() {
 
     private val _tasks = MutableLiveData<MutableList<String>>()
-    private val _taskTimes = hashMapOf<String, Double>()
     val tasks: MutableLiveData<MutableList<String>> = _tasks
+    private val _taskTimes = MutableLiveData<HashMap<String, Int>>()
+    val taskTimes: MutableLiveData<HashMap<String, Int>> = _taskTimes
+
 
     init {
         _tasks.value = loadTasks()
         for (tasks:String in _tasks.value!!) {
-            _taskTimes[tasks] = 0.00
+            _taskTimes.value?.set(tasks, 0)
         }
 
     }
@@ -29,11 +31,11 @@ class MainViewModel: ViewModel() {
 
     fun addTask(task: String) {
         _tasks.value?.add(task)
-        _taskTimes[task] = 0.00
+        _taskTimes.value!![task] = 0
     }
 
     fun removeTask(task: String) {
         _tasks.value?.remove(task)
-        _taskTimes.remove(task)
+        _taskTimes.value!!.remove(task)
     }
 }
