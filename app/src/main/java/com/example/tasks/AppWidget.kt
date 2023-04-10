@@ -9,12 +9,14 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.widget.RemoteViews
-import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
+import com.example.task.MainViewModel
 
 /**
  * Implementation of App Widget functionality.
  */
 class AppWidget : AppWidgetProvider() {
+    private lateinit var viewModel: MainViewModel
 
     override fun onUpdate(
         context: Context,
@@ -52,8 +54,9 @@ class AppWidget : AppWidgetProvider() {
 internal fun updateAppWidget(
     context: Context,
     appWidgetManager: AppWidgetManager,
-    appWidgetId: Int
+    appWidgetId: Int,
 ) {
+
     val intent = Intent(context, MainActivity::class.java)
     val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_MUTABLE)

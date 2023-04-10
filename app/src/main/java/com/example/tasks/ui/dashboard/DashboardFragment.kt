@@ -1,25 +1,17 @@
 package com.example.tasks.ui.dashboard
 
-import android.R
-import android.annotation.SuppressLint
+
+import android.content.Context
 import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Bundle
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
-import android.text.style.RelativeSizeSpan
-import android.text.style.StyleSpan
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
-import com.example.task.AddTaskDialog
-import com.example.task.ItemAdapter
 import com.example.task.MainViewModel
+import com.example.tasks.MainActivity
 import com.example.tasks.databinding.FragmentDashboardBinding
-import com.example.tasks.databinding.FragmentHomeBinding
 import com.github.mikephil.charting.animation.Easing
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.components.Legend
@@ -34,10 +26,16 @@ import com.github.mikephil.charting.utils.MPPointF
 class DashboardFragment : Fragment() {
 
     private var _binding: FragmentDashboardBinding? = null
-    private val viewModel: MainViewModel by activityViewModels()
+    private lateinit var viewModel: MainViewModel
+//    private val viewModel: MainViewModel by activityViewModels()
     private lateinit var chart: PieChart
 
     private val binding get() = _binding!!
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        viewModel = (context as MainActivity).viewModel
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,16 +56,14 @@ class DashboardFragment : Fragment() {
 
         chart.dragDecelerationFrictionCoef = 0.95f
 
-        chart.centerText = generateCenterSpannableText()
-
         chart.isDrawHoleEnabled = true
-        chart.setHoleColor(Color.WHITE)
+        chart.setHoleColor(Color.BLACK)
 
         chart.setTransparentCircleColor(Color.WHITE)
         chart.setTransparentCircleAlpha(110)
 
-        chart.holeRadius = 58f
-        chart.transparentCircleRadius = 61f
+        chart.holeRadius = 50f
+        chart.transparentCircleRadius = 53f
 
         chart.setDrawCenterText(true)
 
@@ -77,41 +73,39 @@ class DashboardFragment : Fragment() {
         chart.isHighlightPerTapEnabled = true
 
         chart.animateY(1400, Easing.EaseInOutQuad)
-        // chart.spin(2000, 0, 360);
 
-        // chart.spin(2000, 0, 360);
         val l = chart.legend
         l.verticalAlignment = Legend.LegendVerticalAlignment.TOP
-        l.horizontalAlignment = Legend.LegendHorizontalAlignment.RIGHT
+        l.horizontalAlignment = Legend.LegendHorizontalAlignment.CENTER
         l.orientation = Legend.LegendOrientation.VERTICAL
         l.setDrawInside(false)
         l.xEntrySpace = 7f
         l.yEntrySpace = 0f
         l.yOffset = 0f
         l.textColor=Color.WHITE
+        l.textSize=12F
 
         // entry label styling
-        chart.setEntryLabelColor(Color.WHITE)
+        chart.setEntryLabelColor(Color.DKGRAY)
         chart.setEntryLabelTextSize(12f)
-        setData(5, 10F)
+//        setData(6, 10F)
+        viewModel.taskTimes.observe(viewLifecycleOwner) { _ ->
+            setData()
+        }
     }
 
-    private fun setData(count: Int, range: Float) {
+    private fun setData() {
         val entries: ArrayList<PieEntry> = ArrayList()
-        val parties = listOf<String>("a", "b", "c", "d", "e")
+        val taskTimes = viewModel.taskTimes.value!!
 
-        // NOTE: The order of the entries when being added to the entries array determines their position around the center of
-        // the chart.
-        for (i in 0 until count) {
-            entries.add(
-                PieEntry(
-                    (Math.random() * range + range / 5).toFloat(),
-                    parties[i % parties.size],
-                    resources.getDrawable(R.drawable.star_on)
-                )
-            )
+        // Iterate through the taskTimes map and add each task's time to the entries list
+        for ((task, time) in taskTimes) {
+            if (time != 0) {
+                entries.add(PieEntry(time.toFloat(), task))
+            }
         }
-        val dataSet = PieDataSet(entries, "Election Results")
+
+        val dataSet = PieDataSet(entries, "Time Spent per Task")
         dataSet.setDrawIcons(false)
         dataSet.sliceSpace = 3f
         dataSet.iconsOffset = MPPointF(0f, 40f)
@@ -130,25 +124,13 @@ class DashboardFragment : Fragment() {
         val data = PieData(dataSet)
         data.setValueFormatter(PercentFormatter())
         data.setValueTextSize(11f)
-        data.setValueTextColor(Color.WHITE)
+        data.setValueTextColor(Color.DKGRAY)
         chart.data = data
 
         // undo all highlights
         chart.highlightValues(null)
         chart.invalidate()
     }
-
-    private fun generateCenterSpannableText(): SpannableString? {
-        val s = SpannableString("MPAndroidChart\ndeveloped by Philipp Jahoda")
-        s.setSpan(RelativeSizeSpan(1.7f), 0, 14, 0)
-        s.setSpan(StyleSpan(Typeface.NORMAL), 14, s.length - 15, 0)
-        s.setSpan(ForegroundColorSpan(Color.GRAY), 14, s.length - 15, 0)
-        s.setSpan(RelativeSizeSpan(.8f), 14, s.length - 15, 0)
-        s.setSpan(StyleSpan(Typeface.ITALIC), s.length - 14, s.length, 0)
-        s.setSpan(ForegroundColorSpan(ColorTemplate.getHoloBlue()), s.length - 14, s.length, 0)
-        return s
-    }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

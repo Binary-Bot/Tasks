@@ -3,7 +3,7 @@
     android:id="@+id/widget_item_text"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_green_light"
+    android:background="@color/my_red"
     android:text="item"
     android:textColor="@android:color/white"
     android:textSize="20sp"

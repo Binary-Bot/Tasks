@@ -4,8 +4,11 @@ import android.annotation.SuppressLint
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
+import android.os.Build
+import android.util.Log
 import android.widget.RemoteViews
 import android.widget.RemoteViewsService
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.task.MainViewModel
 
@@ -13,7 +16,7 @@ class WidgetService: RemoteViewsService() {
     private lateinit var mainViewModel: MainViewModel
 
     override fun onGetViewFactory(intent: Intent): RemoteViewsFactory {
-        mainViewModel = ViewModelProvider.AndroidViewModelFactory.getInstance(application).create(MainViewModel::class.java)
+        mainViewModel = MainViewModel()
         return ExampleWidgetItemFactory(applicationContext, intent, mainViewModel)
     }
 

@@ -18,6 +18,7 @@ class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private lateinit var viewModel: MainViewModel
+//    private val viewModel: MainViewModel by activityViewModels()
 
     private val binding get() = _binding!!
 
@@ -39,7 +40,7 @@ class HomeFragment : Fragment() {
     @SuppressLint("NotifyDataSetChanged")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val adapter = ItemAdapter(requireContext(), viewModel.tasks.value!!)
+        val adapter = ItemAdapter(requireContext(), viewModel)
         _binding?.gridRecyclerView?.adapter = adapter
 
         binding.fab.setOnClickListener { view ->

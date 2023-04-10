@@ -16,9 +16,9 @@ import com.google.android.material.card.MaterialCardView
  */
 class ItemAdapter(
     private val context: Context,
-    private val dataset: List<String>
+    private val viewModel: MainViewModel
 ) : RecyclerView.Adapter<ItemAdapter.ItemViewHolder>() {
-    private var time = 0.0
+    private val localViewModel: MainViewModel = viewModel
 
     class ItemViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
         val textView: TextView = view.findViewById(R.id.textView)
@@ -40,7 +40,7 @@ class ItemAdapter(
      * Replace the contents of a view (invoked by the layout manager)
      */
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
-        val item = dataset[position]
+        val item = localViewModel.tasks.value!![position]
         holder.textView.text = item
         var isRunning = false
         var elapsedTime = 0L
@@ -62,6 +62,7 @@ class ItemAdapter(
             } else {
                 isRunning = false
                 handler.removeCallbacksAndMessages(null)
+                localViewModel.addTaskTime(item, elapsedTime.toInt())
                 elapsedTime = 0
                 holder.textView.text = item
             }
@@ -79,5 +80,5 @@ class ItemAdapter(
     /**
      * Return the size of your dataset (invoked by the layout manager)
      */
-    override fun getItemCount() = dataset.size
+    override fun getItemCount() = localViewModel.tasks.value!!.size
 }
