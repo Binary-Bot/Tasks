@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.recyclerview.widget.RecyclerView
+import com.example.tasks.MainViewModel
 import com.example.tasks.R
 import com.google.android.material.card.MaterialCardView
 
@@ -66,6 +67,10 @@ class ItemAdapter(
                 elapsedTime = 0
                 holder.textView.text = item
             }
+        }
+        holder.cardView.setOnClickListener {
+            localViewModel.removeTask(item)
+            notifyItemRemoved(position)
         }
     }
 

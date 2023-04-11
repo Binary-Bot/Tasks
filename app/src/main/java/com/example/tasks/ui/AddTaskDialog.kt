@@ -1,4 +1,4 @@
-package com.example.task
+package com.example.tasks.ui
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -7,6 +7,7 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.widget.EditText
 import androidx.fragment.app.DialogFragment
+import com.example.tasks.MainViewModel
 import com.example.tasks.R
 
 class AddTaskDialog(viewModel: MainViewModel): DialogFragment() {

@@ -7,10 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import com.example.task.AddTaskDialog
+import com.example.tasks.ui.AddTaskDialog
 import com.example.task.ItemAdapter
-import com.example.task.MainViewModel
+import com.example.tasks.MainViewModel
 import com.example.tasks.MainActivity
 import com.example.tasks.databinding.FragmentHomeBinding
 
@@ -48,9 +47,6 @@ class HomeFragment : Fragment() {
             dialog.show(parentFragmentManager, "Add New Task")
             adapter.notifyDataSetChanged()
         }
-
-
-
     }
 
     override fun onDestroyView() {

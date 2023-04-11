@@ -9,7 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.task.MainViewModel
+import com.example.tasks.MainViewModel
 import com.example.tasks.MainActivity
 import com.example.tasks.databinding.FragmentDashboardBinding
 import com.github.mikephil.charting.animation.Easing

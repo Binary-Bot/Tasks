@@ -1,15 +1,18 @@
-package com.example.task
+package com.example.tasks
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.tasks.ui.Shared
+import com.example.tasks.widget.AppWidget
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 class MainViewModel: ViewModel() {
 
+    private lateinit var context:Context
     private val _tasks = MutableLiveData<MutableList<String>>()
     val tasks: MutableLiveData<MutableList<String>> = _tasks
     private val _taskTimes = MutableLiveData<HashMap<String, Int>>()
@@ -17,14 +20,10 @@ class MainViewModel: ViewModel() {
 
     private lateinit var sharedPreferences:SharedPreferences
 
-    init {
-
-    }
     private fun loadTasks(): MutableList<String> {
         return mutableListOf<String>(
             "Work Out",
             "Assignments",
-            "Meditation",
             "Cooking",
             "Netflix",
             "Gaming",
@@ -34,56 +33,56 @@ class MainViewModel: ViewModel() {
     fun addTask(task: String) {
         _tasks.value?.add(task)
         _taskTimes.value!![task] = 0
-        storeData(TASKS, _tasks.value!!)
-        storeTimeData(TASK_TIMES, _taskTimes.value!!)
+        storeData(_tasks.value!!)
+        storeTimeData(Shared.TASK_TIMES, _taskTimes.value!!)
     }
 
     fun removeTask(task: String) {
         _tasks.value?.remove(task)
         _taskTimes.value!!.remove(task)
-        storeData(TASKS, _tasks.value!!)
-        storeTimeData(TASK_TIMES, _taskTimes.value!!)
+        storeData(_tasks.value!!)
+        storeTimeData(Shared.TASK_TIMES, _taskTimes.value!!)
     }
 
     fun addTaskTime(task: String, time:Int) {
         _taskTimes.value!![task] = _taskTimes.value!![task]!!.plus(time)
-        storeTimeData(TASK_TIMES, _taskTimes.value!!)
-        Log.d("Shashwat", "${_taskTimes.value!![task]}")
+        storeTimeData(Shared.TASK_TIMES, _taskTimes.value!!)
     }
 
     fun setContext(context: Context) {
-        sharedPreferences = context.getSharedPreferences(TASKS, Context.MODE_PRIVATE)
-        if (checkIfDataStored(TASKS)) {
-            _tasks.value = retrieveData(TASKS)
+        this.context = context
+        sharedPreferences = context.getSharedPreferences(Shared.TASKS_APP, Context.MODE_PRIVATE)
+        if (checkIfDataStored(Shared.TASKS)) {
+            _tasks.value = retrieveData(Shared.TASKS)
         } else {
             _tasks.value = loadTasks()
-            storeData(TASKS, _tasks.value!!)
+            storeData(_tasks.value!!)
         }
-        if (checkIfDataStored(TASK_TIMES)) {
-            _taskTimes.value = retrieveTimeData(TASK_TIMES)
+        if (checkIfDataStored(Shared.TASK_TIMES)) {
+            _taskTimes.value = retrieveTimeData(Shared.TASK_TIMES)
         } else {
             _taskTimes.value = hashMapOf()
             for (tasks: String in _tasks.value!!) {
                 _taskTimes.value!![tasks] = 0
             }
-            storeTimeData(TASKS, _taskTimes.value!!)
+            storeTimeData(Shared.TASK_TIMES, _taskTimes.value!!)
         }
     }
 
-    private fun storeData(key:String, value:List<String>) {
+    private fun storeData(value:List<String>) {
         val editor = sharedPreferences.edit()
         val json = Gson().toJson(value)
-        Log.d("Shashwat", "storing in json: $json")
-        editor.putString(key, json)
+        editor.putString(Shared.TASKS, json)
         editor.apply()
+        updateWidget()
     }
 
     private fun storeTimeData(key:String, value:HashMap<String, Int>) {
         val editor = sharedPreferences.edit()
         val json = Gson().toJson(value)
-        Log.d("Shashwat", "storing in json: $json")
         editor.putString(key, json)
         editor.apply()
+        updateWidget()
     }
 
 
@@ -99,13 +98,14 @@ class MainViewModel: ViewModel() {
         return Gson().fromJson(json, type)
     }
 
-    fun checkIfDataStored(key: String): Boolean {
+    private fun checkIfDataStored(key: String): Boolean {
         val data = sharedPreferences.getString(key, null)
         return data != null
     }
 
-    companion object{
-        const val TASKS = "tasks"
-        const val TASK_TIMES = "taskTimes"
+    private fun updateWidget() {
+        val intent = Intent(context, AppWidget::class.java)
+        intent.action = AppWidget.ACTION_UPDATE_WIDGET
+        context.sendBroadcast(intent)
     }
 }
